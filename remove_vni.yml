@@ -1,0 +1,35 @@
+---
+- name: Add new VNI to leafs
+  connection: network_cli
+  hosts: leafs
+  gather_facts: false
+
+  tasks:
+    - name: Gather VNI variables
+      include_vars:
+        file: vni_vars.yml
+      run_once: true
+
+    - name: "Delete old config files"
+      file:
+        path: "./configurations/remove_vni_config.txt"
+        state: absent
+      tags: generate_cfgs
+      run_once: true
+
+    - name: Generate new VNI Configs
+      template: 
+        src: ./templates/remove_vni_template.j2
+        dest: "./configurations/remove_vni.config"
+      tags: generate_cfgs
+      run_once: true
+
+    - name: Preparing to remove VNI configuration
+      pause:
+        prompt: 'Removing VNI config in remove_vni.config to host(s).  Press retun to continue or CTRL+C to and then A to abort'
+
+    - name: Apply VNI Configuration
+      nxos_config:
+        src: ./configurations/remove_vni.config
+        backup: yes
+        save_when: modified

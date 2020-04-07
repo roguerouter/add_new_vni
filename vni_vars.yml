@@ -1,0 +1,5 @@
+vlan_id: 150
+vni_id: 100150
+svi_ip_addr: 10.150.0.254/24
+bgp_as: 65000
+mcast_group_ip: 239.1.1.150

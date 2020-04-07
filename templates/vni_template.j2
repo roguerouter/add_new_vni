@@ -1,0 +1,24 @@
+configure terminal
+vlan {{ vlan_id }}
+  vn-segment {{ vni_id }}
+
+interface vlan {{ vlan_id }}
+  vrf member L3-VNI-ROUTE
+  ip address {{ svi_ip_addr }}
+  fabric forwarding mode anycast-gateway
+  no shutdown
+
+interface nve1
+  member vni {{ vni_id }}
+   suppress-arp
+   mcast-group {{ mcast_group_ip }}
+
+interface ethernet1/6
+ switchport acc vlan {{ vlan_id }}
+
+router bgp {{ bgp_as }}
+evpn
+  vni {{ vni_id }} l2
+   rd auto
+   route-target import auto
+   route-target export auto
